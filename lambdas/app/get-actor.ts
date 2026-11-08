@@ -2,7 +2,6 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import {
   GetCommand,
   QueryCommand,
-  QueryCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import {
   actorKey,

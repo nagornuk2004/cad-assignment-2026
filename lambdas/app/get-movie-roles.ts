@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import {
   actorKey,
   ddb,
