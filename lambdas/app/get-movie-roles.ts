@@ -29,24 +29,16 @@ export const handler = async (
   }
 
   try {
-    let queryResult
-    if (actorId !== undefined) {
-      queryResult = await ddb.send(
-        new QueryCommand({
-          TableName: tableName,
-          KeyConditionExpression: "PK = :pk AND SK = :sk",
-          ExpressionAttributeValues: { ":pk": movieKey(movieId), ":sk": actorKey(actorId) },
-        })
-      );
-    } else {
-      queryResult = await ddb.send(
-        new QueryCommand({
-          TableName: tableName,
-          KeyConditionExpression: "PK = :pk",
-          ExpressionAttributeValues: { ":pk": movieKey(movieId) },
-        })
-      );
-    }
+    const queryResult = await ddb.send(
+      new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: actorId !== undefined ? "PK = :pk AND SK = :sk" : "PK = :pk",
+        ExpressionAttributeValues: {
+          ":pk": movieKey(movieId),
+          ...(actorId !== undefined && { ":sk": actorKey(actorId) }),
+        },
+      })
+    );
 
     const resultItems = queryResult.Items ?? [];
     return response(200, { data: resultItems.filter(isRoleItem).map(toRole) });
