@@ -1,7 +1,12 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  QueryCommand,
+  QueryCommandInput,
+} from "@aws-sdk/lib-dynamodb";
 import {
   actorKey,
+  movieKey,
   ddb,
   parseId,
   tableName,
@@ -25,6 +30,7 @@ export const handler = async (
   if (movieParam !== undefined && movieId === undefined) {
     return response(400, { message: "movie must be a positive integer" });
   }
+
   try {
     const actorResult = await ddb.send(
       new GetCommand({
@@ -36,8 +42,29 @@ export const handler = async (
     if (!actorResult.Item) {
       return response(404, { message: `Actor ${actorId} not found` });
     }
-    const actor = toActor(actorResult.Item);
-    return response(200, { data: actor });
+
+    let roleResult;
+    if (movieId !== undefined) {
+      const commandInput: QueryCommandInput = {
+        TableName: tableName,
+        KeyConditionExpression: "PK = :pk AND SK = :sk",
+        ExpressionAttributeValues: {
+          ":pk": movieKey(movieId),
+          ":sk": actorKey(actorId)
+        },
+      };
+      const commandOutput = await ddb.send(
+        new QueryCommand(commandInput),
+      );
+      if (!commandOutput.Items || commandOutput.Items.length === 0) {
+        return response(404, { message: `Movie ${movieId} not found` });
+      }
+      roleResult = {
+        roleDescription: commandOutput.Items[0]?.roleDescription
+      };
+    }
+
+    return response(200, { data: {...toActor(actorResult.Item), ...roleResult} });
   } catch (err) {
     console.error("DynamoDB error:", err);
     return response(500, { message: "Internal server error", error: err });
