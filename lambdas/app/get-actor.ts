@@ -45,16 +45,15 @@ export const handler = async (
 
     let roleResult;
     if (movieId !== undefined) {
-      const commandInput: QueryCommandInput = {
-        TableName: tableName,
-        KeyConditionExpression: "PK = :pk AND SK = :sk",
-        ExpressionAttributeValues: {
-          ":pk": movieKey(movieId),
-          ":sk": actorKey(actorId)
-        },
-      };
       const commandOutput = await ddb.send(
-        new QueryCommand(commandInput),
+        new QueryCommand({
+          TableName: tableName,
+          KeyConditionExpression: "PK = :pk AND SK = :sk",
+          ExpressionAttributeValues: {
+            ":pk": movieKey(movieId),
+            ":sk": actorKey(actorId)
+          },
+        }),
       );
       if (!commandOutput.Items || commandOutput.Items.length === 0) {
         return response(404, { message: `Actor ${actorId} has no role in movie ${movieId}` });
