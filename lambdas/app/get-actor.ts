@@ -57,7 +57,7 @@ export const handler = async (
         new QueryCommand(commandInput),
       );
       if (!commandOutput.Items || commandOutput.Items.length === 0) {
-        return response(404, { message: `Movie ${movieId} not found` });
+        return response(404, { message: `Actor ${actorId} has no role in movie ${movieId}` });
       }
       roleResult = {
         roleDescription: commandOutput.Items[0]?.roleDescription
