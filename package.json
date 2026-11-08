@@ -5,7 +5,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "schema": "typescript-json-schema --noExtraProps --required --refs false -o ./shared/types.schema.json  \"./lambdas/shared/model.ts\" \"*\""
   },
   "devDependencies": {
     "@swc/core": "^1.15.0",
@@ -16,7 +17,8 @@
     "aws-cdk": "2.1141.0",
     "jest": "^30",
     "tsx": "^4.23.0",
-    "typescript": "~7.0.2"
+    "typescript": "~7.0.2",
+    "typescript-json-schema": "^0.68.0"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1146.0",

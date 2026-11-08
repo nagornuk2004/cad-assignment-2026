@@ -1,5 +1,6 @@
 *.js
 !jest.config.js
+*.schema.json
 
 node_modules
 
