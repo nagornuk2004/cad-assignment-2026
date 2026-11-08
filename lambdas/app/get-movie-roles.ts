@@ -40,7 +40,14 @@ export const handler = async (
       })
     );
 
-    const resultItems = queryResult.Items ?? [];
+    if (!queryResult.Items || queryResult.Items.length === 0) {
+      const message = actorId !== undefined
+        ? `Role with actor ${actorId} in movie ${movieId} not found`
+        : `No roles found for movie ${movieId}`;
+      return response(404, { message });
+    }
+
+    const resultItems = queryResult.Items;
     return response(200, { data: resultItems.filter(isRoleItem).map(toRole) });
   } catch (err) {
     console.error("DynamoDB error:", err);
