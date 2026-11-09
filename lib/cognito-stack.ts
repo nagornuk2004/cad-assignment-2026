@@ -56,9 +56,7 @@ export class CognitoStack extends cdk.Stack {
       ['signout', 'SignoutFn', 'signout.ts'],
     ];
     for (const [path, name, entry] of routes) {
-      authResource
-        .addResource(path)
-        .addMethod('POST', new apig.LambdaIntegration(authFn(name, entry)));
+      authResource.addResource(path).addMethod('POST', new apig.LambdaIntegration(authFn(name, entry)));
     }
 
     new cdk.CfnOutput(this, 'AuthApiUrl', { value: authApi.url });

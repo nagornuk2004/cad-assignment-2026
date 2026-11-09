@@ -31,8 +31,10 @@ export interface Role {
 export const isMovieItem = (item: Record<string, unknown>) =>
   typeof item.SK === 'string' && item.SK.startsWith('m#');
 export const isRoleItem = (item: Record<string, unknown>) =>
-  typeof item.PK === 'string' && item.PK.startsWith('m#') &&
-  typeof item.SK === 'string' && item.SK.startsWith('a#');
+  typeof item.PK === 'string' &&
+  item.PK.startsWith('m#') &&
+  typeof item.SK === 'string' &&
+  item.SK.startsWith('a#');
 
 export const toRole = ({ movieId, actorId, roleName, roleDescription }: Record<string, any>): Role => ({
   movieId,

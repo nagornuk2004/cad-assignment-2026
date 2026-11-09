@@ -22,7 +22,10 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         ConfirmationCode: body.code,
       }),
     );
-    return response(200, { message: 'User confirmed. You can now sign in.', username: body.username });
+    return response(200, {
+      message: 'User confirmed. You can now sign in.',
+      username: body.username,
+    });
   } catch (err) {
     return cognitoErrorResponse(err);
   }

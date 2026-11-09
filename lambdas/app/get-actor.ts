@@ -1,33 +1,21 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import {
-  GetCommand,
-  QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-import {
-  actorKey,
-  movieKey,
-  ddb,
-  parseId,
-  tableName,
-  toActor,
-} from "../shared/db";
-import { response } from "../shared/http";
-import { logRequest } from "../shared/request-logger";
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { actorKey, movieKey, ddb, parseId, tableName, toActor } from '../shared/db';
+import { response } from '../shared/http';
+import { logRequest } from '../shared/request-logger';
 
-export const handler = async (
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logRequest(event);
 
   const actorId = parseId(event.pathParameters?.actorID);
   if (actorId === undefined) {
-    return response(400, { message: "actorID must be a positive integer" });
+    return response(400, { message: 'actorID must be a positive integer' });
   }
 
   const movieParam = event.queryStringParameters?.movie;
   const movieId = parseId(movieParam);
   if (movieParam !== undefined && movieId === undefined) {
-    return response(400, { message: "movie must be a positive integer" });
+    return response(400, { message: 'movie must be a positive integer' });
   }
 
   try {
@@ -35,7 +23,7 @@ export const handler = async (
       new GetCommand({
         TableName: tableName,
         Key: { PK: actorKey(actorId), SK: actorKey(actorId) },
-      })
+      }),
     );
 
     if (!actorResult.Item) {
@@ -47,24 +35,28 @@ export const handler = async (
       const commandOutput = await ddb.send(
         new QueryCommand({
           TableName: tableName,
-          KeyConditionExpression: "PK = :pk AND SK = :sk",
+          KeyConditionExpression: 'PK = :pk AND SK = :sk',
           ExpressionAttributeValues: {
-            ":pk": movieKey(movieId),
-            ":sk": actorKey(actorId)
+            ':pk': movieKey(movieId),
+            ':sk': actorKey(actorId),
           },
         }),
       );
       if (!commandOutput.Items || commandOutput.Items.length === 0) {
-        return response(404, { message: `Actor ${actorId} has no role in movie ${movieId}` });
+        return response(404, {
+          message: `Actor ${actorId} has no role in movie ${movieId}`,
+        });
       }
       roleResult = {
-        roleDescription: commandOutput.Items[0]?.roleDescription
+        roleDescription: commandOutput.Items[0]?.roleDescription,
       };
     }
 
-    return response(200, { data: {...toActor(actorResult.Item), ...roleResult} });
+    return response(200, {
+      data: { ...toActor(actorResult.Item), ...roleResult },
+    });
   } catch (err) {
-    console.error("DynamoDB error:", err);
-    return response(500, { message: "Internal server error" });
+    console.error('DynamoDB error:', err);
+    return response(500, { message: 'Internal server error' });
   }
 };

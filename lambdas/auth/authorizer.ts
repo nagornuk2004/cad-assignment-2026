@@ -1,7 +1,4 @@
-import type {
-  APIGatewayAuthorizerResult,
-  APIGatewayRequestAuthorizerEvent,
-} from 'aws-lambda';
+import type { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
 // Created outside the handler so the user pool's JWKS is cached across invocations.
