@@ -34,7 +34,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       const message =
         actorId !== undefined
           ? `Role with actor ${actorId} in movie ${movieId} not found`
-          : `No roles found for movie ${movieId}`;
+          : `Movie ${movieId} not found`;
       return response(404, { message });
     }
 
